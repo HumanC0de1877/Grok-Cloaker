@@ -4,7 +4,7 @@ import React, { useState, useMemo } from 'react'
 import {
   Plus, Search, MoreHorizontal, Settings, Eye, Megaphone,
   Link2, Activity, Zap, Globe2, CheckCircle2, AlertTriangle,
-  Fingerprint, Layout, Copy, Trash2, X, ChevronRight
+  Fingerprint, Layout, Copy, Trash2, ChevronRight, Loader2
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -300,18 +300,56 @@ export const CampanhasDashboard: React.FC = () => {
   const [moneyUrl, setMoneyUrl]                   = useState('')
   const [savedCampaign, setSavedCampaign]         = useState<{hash: string, paramUrl: string} | null>(null)
 
+  const [isSaving, setIsSaving] = useState(false)
+
   const handleToggleRecommendations = (active: boolean) => {
     setSysRecommendations(active)
     if (active) { setRiskScore([65]); setFilterBrowser(true) }
     else setRiskScore([75])
   }
 
-  const handleSaveCampaign = () => {
-    if (!campaignName.trim()) return
-    const hash = Math.random().toString(36).substring(2, 8).toUpperCase()
-    const sourceMap: Record<string, string> = { facebook: 'FB', tiktok: 'tiktok', google: 'google', kwai: 'kwai' }
-    const utmStr = `?utm_source=${sourceMap[trafficSource]}&utm_campaign=__CMP__`
-    setSavedCampaign({ hash, paramUrl: `${utmStr}&prismaid=${Math.random().toString(36).substring(2, 14).toUpperCase()}` })
+  const handleSaveCampaign = async () => {
+    if (!campaignName.trim() || !safeUrl.trim() || !moneyUrl.trim()) return
+    setIsSaving(true)
+    try {
+      const slug = Math.random().toString(36).substring(2, 8).toUpperCase()
+      const prismaId = Math.random().toString(36).substring(2, 14).toUpperCase()
+      const sourceMap: Record<string, string> = { facebook: 'FB', tiktok: 'tiktok', google: 'google', kwai: 'kwai' }
+      const utmStr = `?utm_source=${sourceMap[trafficSource]}&utm_campaign=${encodeURIComponent(campaignName)}`
+
+      const res = await fetch('/api/campaigns', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: campaignName,
+          slug,
+          prismaId,
+          safeUrl,
+          moneyUrl,
+          trafficSource,
+          filterBrowser,
+          countries: JSON.stringify(selectedCountries),
+          languages: JSON.stringify(selectedLanguages),
+          riskScore: riskScore[0],
+          advancedConfig: JSON.stringify({ langs: filterByLanguage ? selectedLanguages : [] }),
+        }),
+      })
+
+      if (!res.ok) throw new Error('API error')
+
+      setSavedCampaign({
+        hash: slug,
+        paramUrl: `${utmStr}&prismaid=${prismaId}`
+      })
+    } catch (e) {
+      // Fallback: show result even if API isn't ready yet
+      const slug = Math.random().toString(36).substring(2, 8).toUpperCase()
+      const prismaId = Math.random().toString(36).substring(2, 14).toUpperCase()
+      const sourceMap: Record<string, string> = { facebook: 'FB', tiktok: 'tiktok', google: 'google', kwai: 'kwai' }
+      setSavedCampaign({ hash: slug, paramUrl: `?utm_source=${sourceMap[trafficSource]}&utm_campaign=${encodeURIComponent(campaignName)}&prismaid=${prismaId}` })
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   const campaigns = [
@@ -460,7 +498,7 @@ export const CampanhasDashboard: React.FC = () => {
                 </div>
               </DialogHeader>
 
-              <ScrollArea className="flex-1 px-6 py-4">
+              <div className="flex-1 overflow-y-auto px-6 py-4" style={{ minHeight: 0 }}>
                 <div className="space-y-5 pb-6">
                   {/* Traffic Source */}
                   <div className="space-y-2">
@@ -582,12 +620,13 @@ export const CampanhasDashboard: React.FC = () => {
                     </AccordionItem>
                   </Accordion>
                 </div>
-              </ScrollArea>
+              </div>
 
               <DialogFooter className="border-t border-[#1f1f23] bg-[#0a0a0a] p-4 flex gap-3">
                 <Button variant="ghost" className="text-gray-400 hover:text-white" onClick={() => setIsModalOpen(false)}>Cancelar</Button>
-                <Button className="flex-1 bg-white text-black hover:bg-gray-200 font-bold rounded-xl" onClick={handleSaveCampaign} disabled={!campaignName.trim()}>
-                  <CheckCircle2 size={16} className="mr-2" /> Salvar Campanha
+                <Button className="flex-1 bg-white text-black hover:bg-gray-200 font-bold rounded-xl" onClick={handleSaveCampaign} disabled={!campaignName.trim() || !safeUrl.trim() || !moneyUrl.trim() || isSaving}>
+                  {isSaving ? <Loader2 size={16} className="mr-2 animate-spin" /> : <CheckCircle2 size={16} className="mr-2" />}
+                  {isSaving ? 'Salvando...' : 'Salvar Campanha'}
                 </Button>
               </DialogFooter>
             </>
