@@ -24,24 +24,24 @@ export default function LoginPage() {
           {/* Email */}
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Mail size={18} className="text-[#b81d77]" />
+              <Mail size={18} className="text-white" />
             </div>
             <Input 
               type="email" 
               placeholder="Email" 
-              className="pl-10 bg-[#0f0f11] border-[#1f1f23] text-white placeholder-gray-500 rounded-xl h-12 focus-visible:ring-[#b81d77] transition-all"
+              className="pl-10 bg-[#0f0f11] border-[#1f1f23] text-white placeholder-gray-500 rounded-xl h-12 focus-visible:ring-white transition-all"
             />
           </div>
 
           {/* Senha */}
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Lock size={18} className="text-[#b81d77]" />
+              <Lock size={18} className="text-white" />
             </div>
             <Input 
               type={showPassword ? "text" : "password"} 
               placeholder="Senha" 
-              className="pl-10 pr-10 bg-[#0f0f11] border-[#1f1f23] text-white placeholder-gray-500 rounded-xl h-12 focus-visible:ring-[#b81d77] transition-all"
+              className="pl-10 pr-10 bg-[#0f0f11] border-[#1f1f23] text-white placeholder-gray-500 rounded-xl h-12 focus-visible:ring-white transition-all"
             />
             <button 
               type="button"
@@ -55,20 +55,20 @@ export default function LoginPage() {
           {/* Lembrar e Recuperar */}
           <div className="flex items-center justify-between pt-2 pb-2">
             <div className="flex items-center space-x-2">
-              <Checkbox id="remember" className="border-[#1f1f23] data-[state=checked]:bg-[#b81d77] data-[state=checked]:border-[#b81d77]" />
+              <Checkbox id="remember" className="border-[#1f1f23] data-[state=checked]:bg-white data-[state=checked]:border-white data-[state=checked]:text-black" />
               <label htmlFor="remember" className="text-xs text-gray-500 cursor-pointer">Lembrar de mim</label>
             </div>
-            <Link href="#" className="text-xs text-[#b81d77] hover:underline">Esqueceu a senha?</Link>
+            <Link href="#" className="text-xs text-white hover:underline">Esqueceu a senha?</Link>
           </div>
 
-          <Button className="w-full bg-[#b81d77] hover:bg-[#9a1561] text-white font-bold h-12 rounded-xl transition-all">
+          <Button className="w-full bg-white hover:bg-gray-200 text-black font-bold h-12 rounded-xl transition-all">
             ENTRAR &rarr;
           </Button>
 
         </form>
 
         <p className="text-center text-xs text-gray-500 mt-8">
-          Não tem uma conta? <Link href="/register" className="text-[#b81d77] hover:underline font-semibold">Criar conta</Link>
+          Não tem uma conta? <Link href="/register" className="text-white hover:underline font-semibold">Criar conta</Link>
         </p>
 
       </div>

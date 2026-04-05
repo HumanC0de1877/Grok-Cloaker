@@ -25,24 +25,24 @@ export default function RegisterPage() {
           {/* Nome Completo */}
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <User size={18} className="text-[#b81d77]" />
+              <User size={18} className="text-white" />
             </div>
             <Input 
               type="text" 
               placeholder="Nome Completo *" 
-              className="pl-10 bg-[#0f0f11] border-[#1f1f23] text-white placeholder-gray-500 rounded-xl h-12 focus-visible:ring-[#b81d77] transition-all"
+              className="pl-10 bg-[#0f0f11] border-[#1f1f23] text-white placeholder-gray-500 rounded-xl h-12 focus-visible:ring-white transition-all"
             />
           </div>
 
           {/* Username */}
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <AtSign size={18} className="text-[#b81d77]" />
+              <AtSign size={18} className="text-white" />
             </div>
             <Input 
               type="text" 
               placeholder="usuario" 
-              className="pl-10 bg-[#0f0f11] border-[#1f1f23] text-white placeholder-gray-500 rounded-xl h-12 focus-visible:ring-[#b81d77] transition-all"
+              className="pl-10 bg-[#0f0f11] border-[#1f1f23] text-white placeholder-gray-500 rounded-xl h-12 focus-visible:ring-white transition-all"
             />
           </div>
           <p className="text-[10px] text-gray-500 mt-1 pl-1">Apenas letras, números e underscore</p>
@@ -50,12 +50,12 @@ export default function RegisterPage() {
           {/* Email */}
           <div className="relative mt-4">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Mail size={18} className="text-[#b81d77]" />
+              <Mail size={18} className="text-white" />
             </div>
             <Input 
               type="email" 
               placeholder="Email *" 
-              className="pl-10 bg-[#0f0f11] border-[#1f1f23] text-white placeholder-gray-500 rounded-xl h-12 focus-visible:ring-[#b81d77] transition-all"
+              className="pl-10 bg-[#0f0f11] border-[#1f1f23] text-white placeholder-gray-500 rounded-xl h-12 focus-visible:ring-white transition-all"
             />
           </div>
 
@@ -63,18 +63,18 @@ export default function RegisterPage() {
           <div className="flex gap-2">
             <div className="w-1/3 relative flex items-center justify-between px-3 bg-[#0f0f11] border border-[#1f1f23] rounded-xl h-12 cursor-pointer hover:border-gray-700 transition-colors">
               <span className="text-white text-sm font-semibold flex items-center gap-1">
-                <span className="text-[#b81d77] uppercase text-xs">BR</span> +55
+                <span className="text-white uppercase text-xs">BR</span> +55
               </span>
-              <ChevronDown size={14} className="text-[#b81d77]" />
+              <ChevronDown size={14} className="text-white" />
             </div>
             <div className="flex-1 relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Phone size={18} className="text-[#b81d77]" />
+                <Phone size={18} className="text-white" />
               </div>
               <Input 
                 type="tel" 
                 placeholder="Telefone *" 
-                className="pl-10 bg-[#0f0f11] border-[#1f1f23] text-white placeholder-gray-500 rounded-xl h-12 focus-visible:ring-[#b81d77] transition-all"
+                className="pl-10 bg-[#0f0f11] border-[#1f1f23] text-white placeholder-gray-500 rounded-xl h-12 focus-visible:ring-white transition-all"
               />
             </div>
           </div>
@@ -83,12 +83,12 @@ export default function RegisterPage() {
           <div className="flex gap-4">
             <div className="flex-1 relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Lock size={18} className="text-[#b81d77]" />
+                <Lock size={18} className="text-white" />
               </div>
               <Input 
                 type={showPassword ? "text" : "password"} 
                 placeholder="Senha *" 
-                className="pl-10 pr-10 bg-[#0f0f11] border-[#1f1f23] text-white placeholder-gray-500 rounded-xl h-12 focus-visible:ring-[#b81d77] transition-all"
+                className="pl-10 pr-10 bg-[#0f0f11] border-[#1f1f23] text-white placeholder-gray-500 rounded-xl h-12 focus-visible:ring-white transition-all"
               />
               <button 
                 type="button"
@@ -120,13 +120,13 @@ export default function RegisterPage() {
 
           {/* Terms */}
           <div className="flex items-start space-x-3 pt-2 pb-2">
-            <Checkbox id="terms" className="mt-1 border-[#1f1f23] data-[state=checked]:bg-[#b81d77] data-[state=checked]:border-[#b81d77]" />
+            <Checkbox id="terms" className="mt-1 border-[#1f1f23] data-[state=checked]:bg-white data-[state=checked]:border-white data-[state=checked]:text-black" />
             <label htmlFor="terms" className="text-[11px] text-gray-500 leading-tight">
               Li e concordo com os <Link href="#" className="text-[#b81d77] hover:underline">Termos de Uso</Link>, <Link href="#" className="text-[#b81d77] hover:underline">Política de Privacidade</Link> e <Link href="#" className="text-[#b81d77] hover:underline">Política de Cookies</Link>.
             </label>
           </div>
 
-          <Button className="w-full bg-[#b81d77] hover:bg-[#9a1561] text-white font-bold h-12 rounded-xl transition-all">
+          <Button className="w-full bg-white hover:bg-gray-200 text-black font-bold h-12 rounded-xl transition-all">
             CRIAR CONTA &rarr;
           </Button>
 
