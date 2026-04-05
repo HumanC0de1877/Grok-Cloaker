@@ -7,17 +7,19 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = "file:./dev.db"
 }
 
 model Campaign {
   id              String       @id @default(cuid())
+  slug            String       @unique // represents the /KIWDWA/ directory
+  userId          String?      // Optional for now to not break existing dev DB
+  user            User?        @relation(fields: [userId], references: [id])
   name            String
   status          String       @default("active")
   safeUrl         String
   moneyUrl        String
   trafficSource   String       @default("facebook")
-  prismaId        String?      @unique
+  prismaId        String       @unique // the explicit query parameter required to bypass
   filterBrowser   Boolean      @default(true)
   countries       String       // JSON stringified array of ISO country codes
   languages       String       // JSON stringified array of languages
@@ -49,4 +51,15 @@ model TrafficLog {
   reason      String?
   score       Int      @default(0)
   createdAt   DateTime @default(now())
+}
+
+model User {
+  id        String     @id @default(cuid())
+  fullName  String
+  username  String     @unique
+  email     String     @unique
+  phone     String?
+  password  String
+  createdAt DateTime   @default(now())
+  campaigns Campaign[]
 }
