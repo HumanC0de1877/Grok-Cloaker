@@ -1,12 +1,11 @@
 import { NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+// Prisma v7 re-exports generated client through @prisma/client -> .prisma/client
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { PrismaClient } = require('@prisma/client')
 
-const globalForPrisma = global as unknown as { prisma: PrismaClient }
+const globalForPrisma = global as unknown as { prisma: any }
 const prisma = globalForPrisma.prisma || new PrismaClient()
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
-
-// Export to edge runtime if using Cloudflare Pages / Vercel Edge
-export const runtime = 'edge'
 
 export async function GET(
   request: Request,
