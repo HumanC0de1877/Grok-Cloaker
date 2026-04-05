@@ -388,6 +388,66 @@ export const CampanhasDashboard: React.FC = () => {
                         {sysRecommendations && (
                           <p className="text-[10px] text-emerald-500">Travado pelar recomendações globais para proteção estrita contra ad-crawlers.</p>
                         )}
+                        <div className="flex flex-col space-y-4 pt-4 border-t border-[#1f1f23]">
+                          <div className="flex items-center justify-between">
+                             <Label className="text-xs">Machine Learning Adaptativo</Label>
+                             <Switch defaultChecked disabled={sysRecommendations} className="data-[state=checked]:bg-orange-500" />
+                          </div>
+                          <div className="flex items-center justify-between">
+                             <Label className="text-xs">Classificação Inteligente (Auto-Block)</Label>
+                             <Switch defaultChecked disabled={sysRecommendations} className="data-[state=checked]:bg-orange-500" />
+                          </div>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    {/* Fingerprint & Comportamental */}
+                    <AccordionItem value="fingerprint" className="border border-[#1f1f23] bg-[#111] rounded-2xl overflow-hidden px-4">
+                      <AccordionTrigger className="hover:no-underline text-white font-semibold">
+                        <div className="flex items-center gap-3">
+                           <Fingerprint size={16} className="text-emerald-500" /> Fingerprint e Comportamento
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="space-y-4 pt-2 pb-4">
+                          <div className="flex items-center justify-between">
+                             <Label className="text-xs">Canvas & WebGL Fingerprint</Label>
+                             <Switch defaultChecked className="data-[state=checked]:bg-emerald-500" />
+                          </div>
+                          <div className="flex items-center justify-between">
+                             <Label className="text-xs">Análise de Mouse & Scroll (Tracker)</Label>
+                             <Switch defaultChecked className="data-[state=checked]:bg-emerald-500" />
+                          </div>
+                          <div className="flex items-center justify-between">
+                             <Label className="text-xs">Audio & Font Hardware Checks</Label>
+                             <Switch defaultChecked className="data-[state=checked]:bg-emerald-500" />
+                          </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                    
+                    {/* Bot & Adspy */}
+                    <AccordionItem value="bots" className="border border-[#1f1f23] bg-[#111] rounded-2xl overflow-hidden px-4">
+                      <AccordionTrigger className="hover:no-underline text-white font-semibold">
+                        <div className="flex items-center gap-3">
+                           <AlertTriangle size={16} className="text-red-500" /> Rede, Bots & AdSpy
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="space-y-4 pt-2 pb-4">
+                          <div className="flex items-center justify-between">
+                             <Label className="text-xs">Bloqueio Redes (FB/GGL/TK)</Label>
+                             <Switch defaultChecked disabled={sysRecommendations} className="data-[state=checked]:bg-red-500" />
+                          </div>
+                          <div className="flex items-center justify-between">
+                             <Label className="text-xs">Filtro de Bots & Crawlers</Label>
+                             <Switch defaultChecked disabled={sysRecommendations} className="data-[state=checked]:bg-red-500" />
+                          </div>
+                          <div className="flex items-center justify-between">
+                             <Label className="text-xs">Bloquear AdSpy/Plexity Tools</Label>
+                             <Switch defaultChecked className="data-[state=checked]:bg-red-500" />
+                          </div>
+                          <div className="flex items-center justify-between">
+                             <Label className="text-xs">Proxy, VPN & Datacenter ASN</Label>
+                             <Switch defaultChecked className="data-[state=checked]:bg-red-500" />
+                          </div>
                       </AccordionContent>
                     </AccordionItem>
                   </Accordion>

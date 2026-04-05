@@ -23,6 +23,7 @@ model Campaign {
   filterBrowser   Boolean      @default(true)
   countries       String       // JSON stringified array of ISO country codes
   languages       String       // JSON stringified array of languages
+  advancedConfig  String       @default("{}") // Holds all 16 cloaker modules settings
   riskScore       Int          @default(75)
   visitors        Int          @default(0)
   blockedCount    Int          @default(0)
