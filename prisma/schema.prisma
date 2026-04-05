@@ -1,57 +1,11 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
-}
-
-model Campaign {
-  id              String       @id @default(cuid())
-  slug            String       @unique // represents the /KIWDWA/ directory
-  userId          String?      // Optional for now to not break existing dev DB
-  user            User?        @relation(fields: [userId], references: [id])
-  name            String
-  status          String       @default("active")
-  safeUrl         String
-  moneyUrl        String
-  trafficSource   String       @default("facebook")
-  prismaId        String       @unique // the explicit query parameter required to bypass
-  filterBrowser   Boolean      @default(true)
-  countries       String       // JSON stringified array of ISO country codes
-  languages       String       // JSON stringified array of languages
-  advancedConfig  String       @default("{}") @db.Text // Holds all 16 cloaker modules settings
-  riskScore       Int          @default(75)
-  visitors        Int          @default(0)
-  blockedCount    Int          @default(0)
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
-  logs            TrafficLog[]
-}
-
-model Domain {
-  id          String   @id @default(cuid())
-  url         String   @unique
-  isActive    Boolean  @default(true)
-  sslActive   Boolean  @default(true)
-  createdAt   DateTime @default(now())
-}
-
-model TrafficLog {
-  id          String   @id @default(cuid())
-  campaignId  String
-  campaign    Campaign @relation(fields: [campaignId], references: [id])
-  ip          String
-  country     String?
-  device      String?
-  platform    String?
-  status      String   // 'allowed', 'blocked'
-  reason      String?
-  score       Int      @default(0)
-  createdAt   DateTime @default(now())
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -61,6 +15,85 @@ model User {
   email     String     @unique
   phone     String?
   password  String
+  plan      String     @default("starter") // starter | pro | black
+  apiKey    String?    @unique
   createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
   campaigns Campaign[]
+  domains   Domain[]
+}
+
+model Campaign {
+  id             String       @id @default(cuid())
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name           String
+  slug           String       @unique
+  prismaId       String       @unique
+  status         String       @default("active") // active | paused
+  safeUrl        String
+  moneyUrl       String
+  trafficSource  String       @default("facebook") // facebook | tiktok | google | kwai
+  riskScore      Int          @default(75)
+  countries      String       @default("[]")
+  languages      String       @default("[]")
+  advancedConfig String       @default("{}") @db.Text
+  visitors       Int          @default(0)
+  blockedCount   Int          @default(0)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  logs           TrafficLog[]
+
+  @@index([userId])
+  @@index([slug])
+}
+
+model TrafficLog {
+  id         String   @id @default(cuid())
+  campaignId String
+  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  ip         String
+  country    String?
+  device     String?
+  platform   String?
+  status     String   // allowed | blocked
+  reason     String?
+  score      Int      @default(0)
+  createdAt  DateTime @default(now())
+
+  @@index([campaignId, createdAt])
+  @@index([status, createdAt])
+  @@index([score, createdAt])
+}
+
+model Domain {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  url       String   @unique
+  isActive  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model BehavioralLog {
+  id             String   @id @default(cuid())
+  campaignId     String
+  fingerprint    String
+  isBot          Boolean  @default(false)
+  cpuCores       Int?
+  deviceMemory   Int?
+  platform       String?
+  languages      String?
+  screenRes      String?
+  hasWebdriver   Boolean  @default(false)
+  mouseMovements Int      @default(0)
+  clicks         Int      @default(0)
+  scrollDepth    Int      @default(0)
+  timeOnPage     Int      @default(0)
+  createdAt      DateTime @default(now())
+
+  @@index([campaignId, createdAt])
 }

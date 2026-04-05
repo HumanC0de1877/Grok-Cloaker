@@ -1,10 +1,12 @@
-name = "grok-cloaker"
-compatibility_date = "2025-01-01"
-pages_build_output_dir = ".next"
+name = "cloaker-hub"
+compatibility_date = "2024-12-01"
+compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = ".vercel/output/static"
+
+# ⚠️  NUNCA coloque variáveis sensíveis aqui.
+# Configure DATABASE_URL, JWT_SECRET e NEXTAUTH_SECRET
+# exclusivamente no painel do Cloudflare Pages:
+# https://dash.cloudflare.com → Pages → cloaker-hub → Settings → Environment variables
 
 [vars]
 NODE_ENV = "production"
-
-# Para adicionar DATABASE_URL, vá em:
-# Cloudflare Dashboard → Workers & Pages → seu projeto → Settings → Variables
-# e adicione DATABASE_URL com a string de conexão do EasyPanel

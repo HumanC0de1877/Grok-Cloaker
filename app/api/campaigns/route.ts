@@ -1,76 +1,73 @@
-import { NextResponse } from 'next/server'
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const { PrismaClient } = require('@prisma/client')
+import { NextRequest } from 'next/server'
+import { z } from 'zod'
+import { prisma } from '@/lib/prisma'
+import { ok, err } from '@/lib/api-response'
+import { generateSlug, generatePrismaId } from '@/lib/campaign-utils'
 
-const globalForPrisma = global as unknown as { prisma: any }
-const prisma = globalForPrisma.prisma || new PrismaClient()
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
+const TRAFFIC_SOURCES = ['facebook', 'tiktok', 'google', 'kwai'] as const
 
-// GET /api/campaigns — list all campaigns
-export async function GET() {
-  try {
-    const campaigns = await prisma.campaign.findMany({
-      orderBy: { createdAt: 'desc' },
-      select: {
-        id: true,
-        slug: true,
-        name: true,
-        status: true,
-        safeUrl: true,
-        moneyUrl: true,
-        trafficSource: true,
-        prismaId: true,
-        riskScore: true,
-        visitors: true,
-        blockedCount: true,
-        createdAt: true,
-      }
-    })
-    return NextResponse.json({ campaigns })
-  } catch (err) {
-    console.error('[GET /api/campaigns]', err)
-    return NextResponse.json({ error: 'Failed to fetch campaigns' }, { status: 500 })
-  }
+const createSchema = z.object({
+  name: z.string().min(1),
+  safeUrl: z.string().url(),
+  moneyUrl: z.string().url(),
+  trafficSource: z.enum(TRAFFIC_SOURCES),
+  riskScore: z.number().int().min(0).max(100).optional().default(75),
+  countries: z.array(z.string().length(2)).optional().default([]),
+  languages: z.array(z.string()).optional().default([]),
+  advancedConfig: z.record(z.unknown()).optional().default({}),
+})
+
+export async function GET(req: NextRequest) {
+  const userId = req.headers.get('X-User-Id')
+  if (!userId) return err('Não autorizado', 401)
+
+  const campaigns = await prisma.campaign.findMany({
+    where: { userId },
+    orderBy: { createdAt: 'desc' },
+    select: {
+      id: true, name: true, slug: true, prismaId: true, status: true,
+      safeUrl: true, moneyUrl: true, trafficSource: true, riskScore: true,
+      visitors: true, blockedCount: true, createdAt: true,
+    },
+  })
+
+  return ok({ campaigns })
 }
 
-// POST /api/campaigns — create a campaign
-export async function POST(request: Request) {
-  try {
-    const body = await request.json()
-    const {
-      name, slug, prismaId, safeUrl, moneyUrl,
-      trafficSource, filterBrowser, countries, languages,
-      riskScore, advancedConfig
-    } = body
+export async function POST(req: NextRequest) {
+  const userId = req.headers.get('X-User-Id')
+  const userPlan = req.headers.get('X-User-Plan') ?? 'starter'
+  if (!userId) return err('Não autorizado', 401)
 
-    // Basic validation
-    if (!name || !slug || !prismaId || !safeUrl || !moneyUrl) {
-      return NextResponse.json({ error: 'Missing required fields: name, slug, prismaId, safeUrl, moneyUrl' }, { status: 400 })
-    }
-
-    const campaign = await prisma.campaign.create({
-      data: {
-        name: String(name).slice(0, 200),
-        slug: String(slug).toUpperCase(),
-        prismaId: String(prismaId).toUpperCase(),
-        safeUrl: String(safeUrl),
-        moneyUrl: String(moneyUrl),
-        trafficSource: trafficSource || 'facebook',
-        filterBrowser: Boolean(filterBrowser ?? true),
-        countries: typeof countries === 'string' ? countries : JSON.stringify(countries || []),
-        languages: typeof languages === 'string' ? languages : JSON.stringify(languages || []),
-        riskScore: Number(riskScore) || 75,
-        advancedConfig: typeof advancedConfig === 'string' ? advancedConfig : JSON.stringify(advancedConfig || {}),
-      }
+  // Enforce plan limits
+  if (userPlan === 'starter') {
+    const activeCount = await prisma.campaign.count({
+      where: { userId, status: 'active' },
     })
-
-    return NextResponse.json({ campaign }, { status: 201 })
-  } catch (err: any) {
-    // Unique constraint violation
-    if (err?.code === 'P2002') {
-      return NextResponse.json({ error: 'Slug or PrismaID already exists. Try again.' }, { status: 409 })
+    if (activeCount >= 3) {
+      return err('Limite do plano Starter atingido (máx. 3 campanhas ativas). Faça upgrade para Pro.', 403)
     }
-    console.error('[POST /api/campaigns]', err)
-    return NextResponse.json({ error: 'Failed to create campaign' }, { status: 500 })
   }
+
+  const body = await req.json().catch(() => null)
+  if (!body) return err('Corpo da requisição inválido', 400)
+
+  const parsed = createSchema.safeParse(body)
+  if (!parsed.success) {
+    return err('Dados inválidos', 400, parsed.error.flatten().fieldErrors)
+  }
+
+  const { name, safeUrl, moneyUrl, trafficSource, riskScore, countries, advancedConfig } = parsed.data
+
+  const [slug, prismaId] = await Promise.all([generateSlug(), generatePrismaId()])
+
+  const campaign = await prisma.campaign.create({
+    data: {
+      userId, name, safeUrl, moneyUrl, trafficSource, riskScore, slug, prismaId,
+      countries: JSON.stringify(countries),
+      advancedConfig: JSON.stringify(advancedConfig),
+    },
+  })
+
+  return ok({ campaign }, 201)
 }
