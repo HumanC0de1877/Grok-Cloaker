@@ -1,0 +1,10 @@
+name = "grok-cloaker"
+compatibility_date = "2025-01-01"
+pages_build_output_dir = ".next"
+
+[vars]
+NODE_ENV = "production"
+
+# Para adicionar DATABASE_URL, vá em:
+# Cloudflare Dashboard → Workers & Pages → seu projeto → Settings → Variables
+# e adicione DATABASE_URL com a string de conexão do EasyPanel
