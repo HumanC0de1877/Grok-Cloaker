@@ -1,13 +1,52 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
-  provider = "prisma-client"
-  output   = "../lib/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Campaign {
+  id              String       @id @default(cuid())
+  name            String
+  status          String       @default("active")
+  safeUrl         String
+  moneyUrl        String
+  trafficSource   String       @default("facebook")
+  prismaId        String?      @unique
+  filterBrowser   Boolean      @default(true)
+  countries       String       // JSON stringified array of ISO country codes
+  languages       String       // JSON stringified array of languages
+  riskScore       Int          @default(75)
+  visitors        Int          @default(0)
+  blockedCount    Int          @default(0)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  logs            TrafficLog[]
+}
+
+model Domain {
+  id          String   @id @default(cuid())
+  url         String   @unique
+  isActive    Boolean  @default(true)
+  sslActive   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+}
+
+model TrafficLog {
+  id          String   @id @default(cuid())
+  campaignId  String
+  campaign    Campaign @relation(fields: [campaignId], references: [id])
+  ip          String
+  country     String?
+  device      String?
+  platform    String?
+  status      String   // 'allowed', 'blocked'
+  reason      String?
+  score       Int      @default(0)
+  createdAt   DateTime @default(now())
 }
